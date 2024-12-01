@@ -6,13 +6,13 @@ pub struct Solution;
 impl Solution {
     pub fn new() -> Self {
         let mut sol = Self;
-        sol.read_input("./src/day12/input.txt");
+        let _ = sol.read_input("./src/day12/input.txt");
         sol
     }
 }
 
 impl Solve for Solution {
-    fn read_input(&mut self, path: &str) {}
+    fn read_input(&mut self, path: &str) -> Result<()> { Ok(()) }
 
     fn part1(&mut self) -> Result<()> {
         Ok(())

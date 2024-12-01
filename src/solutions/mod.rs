@@ -27,7 +27,7 @@ mod day24;
 mod day25;
 
 pub trait Solve {
-    fn read_input(&mut self, path: &str);
+    fn read_input(&mut self, path: &str) -> anyhow::Result<()>;
     fn part1(&mut self) -> Result<()>;
     fn part2(&mut self) -> Result<()>;
 }

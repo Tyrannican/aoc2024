@@ -1,3 +1,8 @@
+use std::{
+    fs::File,
+    io::{BufRead, BufReader},
+};
+
 use super::Solve;
 use anyhow::Result;
 
@@ -10,29 +15,32 @@ pub struct Solution {
 impl Solution {
     pub fn new() -> Self {
         let mut sol = Self::default();
-        sol.read_input("./src/solutions/day01/input.txt");
+        let _ = sol.read_input("./src/solutions/day01/input.txt");
         sol
     }
 }
 
 impl Solve for Solution {
-    fn read_input(&mut self, path: &str) {
-        let _: Vec<_> = std::fs::read_to_string(path)
-            .expect("should exist")
-            .trim()
-            .split("\n")
-            .map(|item| {
-                let ids = item
+    fn read_input(&mut self, path: &str) -> Result<()> {
+        let reader = BufReader::new(File::open(path)?);
+        let _: Vec<_> = reader
+            .lines()
+            .map(|line| {
+                let line = line?;
+                let ids = line
                     .split("   ")
                     .map(|id| id.parse::<u32>().expect("input should be valid"))
                     .collect::<Vec<u32>>();
                 self.left_id.push(ids[0]);
                 self.right_id.push(ids[1]);
+                Ok(())
             })
-            .collect();
+            .collect::<Vec<Result<()>>>();
 
         self.left_id.sort();
         self.right_id.sort();
+
+        Ok(())
     }
 
     fn part1(&mut self) -> Result<()> {
