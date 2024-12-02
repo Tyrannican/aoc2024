@@ -6,7 +6,7 @@ pub struct Solution;
 impl Solution {
     pub fn new() -> Self {
         let mut sol = Self;
-        let _ = sol.read_input("./src/day22/input.txt");
+        let _ = sol.read_input("./src/solutions/day22/input.txt");
         sol
     }
 }
