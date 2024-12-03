@@ -41,14 +41,14 @@ impl Solution {
                     }
                 }
                 'u' => {
-                    if instr.starts_with("m") {
+                    if instr == "m" {
                         instr.push(ch);
                     } else {
                         instr.clear();
                     }
                 }
                 'l' => {
-                    if instr.starts_with("mu") {
+                    if instr == "mu" {
                         instr.push(ch);
                     } else {
                         instr.clear();
@@ -154,7 +154,6 @@ impl Solve for Solution {
                 match i {
                     Instruction::Instr(mul) => {
                         let mul = mul.strip_prefix("mul(").unwrap().strip_suffix(")").unwrap();
-                        println!("Mul: {mul}");
                         res = mul
                             .split(",")
                             .map(|v| v.parse::<u64>().unwrap())
