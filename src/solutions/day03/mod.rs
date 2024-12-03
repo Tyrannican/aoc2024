@@ -4,7 +4,7 @@ use regex::Regex;
 
 #[derive(Default)]
 pub struct Solution {
-    program: String,
+    pub program: String,
 }
 
 impl Solution {
@@ -28,107 +28,6 @@ impl Solution {
 
         Ok(result)
     }
-
-    pub fn parse_input(&self) -> Vec<Instruction> {
-        let mut iter = self.program.chars();
-        let mut instructions = vec![];
-        let mut instr = String::new();
-        while let Some(ch) = iter.next() {
-            match ch {
-                'm' => {
-                    if instr.is_empty() {
-                        instr.push(ch)
-                    }
-                }
-                'u' => {
-                    if instr == "m" {
-                        instr.push(ch);
-                    } else {
-                        instr.clear();
-                    }
-                }
-                'l' => {
-                    if instr == "mu" {
-                        instr.push(ch);
-                    } else {
-                        instr.clear();
-                    }
-                }
-                '(' => {
-                    if instr == "mul" || instr == "do" || instr == "don't" {
-                        instr.push(ch)
-                    } else {
-                        instr.clear();
-                    }
-                }
-                '0'..='9' | ',' => {
-                    if instr.starts_with("mul(") {
-                        instr.push(ch);
-                    } else {
-                        instr.clear();
-                    }
-                }
-                ')' => {
-                    if instr.starts_with("mul(") || &instr == "do(" || &instr == "don't(" {
-                        instr.push(ch);
-                    }
-                    if instr.starts_with("mul(") {
-                        instructions.push(Instruction::Instr(instr.clone()));
-                    } else if &instr == "do()" {
-                        instructions.push(Instruction::Enabled);
-                    } else if &instr == "don't()" {
-                        instructions.push(Instruction::Disabled);
-                    }
-
-                    instr.clear();
-                    continue;
-                }
-                'd' => {
-                    if instr.is_empty() {
-                        instr.push(ch);
-                    }
-                }
-                'o' => {
-                    if instr == "d" {
-                        instr.push(ch);
-                    } else {
-                        instr.clear();
-                    }
-                }
-                '\'' => {
-                    if instr == "don" {
-                        instr.push(ch);
-                    } else {
-                        instr.clear();
-                    }
-                }
-                'n' => {
-                    if instr == "do" {
-                        instr.push(ch);
-                    } else {
-                        instr.clear();
-                    }
-                }
-                't' => {
-                    if instr == "don'" {
-                        instr.push(ch);
-                    } else {
-                        instr.clear();
-                    }
-                }
-                _ => instr.clear(),
-            }
-        }
-
-        instructions
-    }
-}
-
-#[derive(Debug)]
-pub enum Instruction {
-    Instr(String),
-    Enabled,
-    Disabled,
 }
 
 impl Solve for Solution {
@@ -145,33 +44,30 @@ impl Solve for Solution {
     }
 
     fn part2(&mut self) -> Result<()> {
-        let instructions = self.parse_input();
         let mut enabled = true;
-        let result = instructions
-            .iter()
-            .filter_map(|i| {
-                let mut res = 0;
-                match i {
-                    Instruction::Instr(mul) => {
-                        let mul = mul.strip_prefix("mul(").unwrap().strip_suffix(")").unwrap();
-                        res = mul
-                            .split(",")
-                            .map(|v| v.parse::<u64>().unwrap())
-                            .product::<u64>();
+        let re = Regex::new(r"mul\([0-9]{1,3},[0-9]{1,3}\)|do\(\)|don't\(\)")?;
+        let result: u64 = re
+            .find_iter(&self.program)
+            .filter_map(|item| {
+                let item = item.as_str();
+                if item == "do()" {
+                    enabled = true;
+                    return None;
+                } else if item == "don't()" {
+                    enabled = false;
+                    return None;
+                } else {
+                    if enabled {
+                        return Some(self.get_mul_results(item).unwrap()[0]);
                     }
-                    Instruction::Enabled => enabled = true,
-                    Instruction::Disabled => enabled = false,
-                }
 
-                if enabled {
-                    return Some(res);
+                    return None;
                 }
-
-                None
             })
-            .sum::<u64>();
+            .sum();
 
         println!("Part 2: {result}");
+
         Ok(())
     }
 }
