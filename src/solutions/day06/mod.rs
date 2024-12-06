@@ -47,16 +47,15 @@ impl Solution {
         let _ = sol.read_input("./src/solutions/day06/input.txt");
         sol
     }
-}
+    fn is_boundary(&self, coord: Coord) -> bool {
+        let (x, y) = coord;
+        x == 0 || x == self.map.len() - 1 || y == 0 || y == self.map[0].len() - 1
+    }
 
-fn is_boundary(coord: Coord, map: &Vec<Vec<u8>>) -> bool {
-    let (x, y) = coord;
-    x == 0 || x == map.len() - 1 || y == 0 || y == map[0].len() - 1
-}
-
-fn index(coord: Coord, map: &Vec<Vec<u8>>) -> u8 {
-    let (x, y) = coord;
-    map[x][y]
+    fn index(&self, coord: Coord) -> u8 {
+        let (x, y) = coord;
+        self.map[x][y]
+    }
 }
 
 impl Solve for Solution {
@@ -88,9 +87,9 @@ impl Solve for Solution {
         let mut current = self.start;
         let mut dir = Direction::North;
 
-        while !is_boundary(current, &self.map) {
+        while !self.is_boundary(current) {
             let next = dir.next_step(current);
-            if index(next, &self.map) == 1 {
+            if self.index(next) == 1 {
                 dir = dir.switch();
                 continue;
             }
@@ -113,17 +112,16 @@ impl Solve for Solution {
             let mut dir = Direction::North;
 
             let (px, py) = *path;
-            let mut map = self.map.clone();
-            map[px][py] = 1;
+            self.map[px][py] = 1;
 
             let mut new_path: HashSet<(Coord, Direction)> = HashSet::new();
-            while !is_boundary(current, &map) {
+            while !self.is_boundary(current) {
                 let next = dir.next_step(current);
                 if new_path.contains(&(next, dir)) {
                     cycles += 1;
                     break;
                 }
-                if index(next, &map) == 1 {
+                if self.index(next) == 1 {
                     dir = dir.switch();
                     continue;
                 } else {
@@ -131,6 +129,8 @@ impl Solve for Solution {
                     current = next;
                 }
             }
+
+            self.map[px][py] = 0;
         }
 
         println!("Part 2: {cycles}");
