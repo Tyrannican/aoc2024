@@ -1,6 +1,7 @@
 use super::Solve;
 use anyhow::Result;
-use itertools::Itertools;
+
+// Heavy inspo from this: https://github.com/p1xelHer0/aoc-2024/blob/main/odin/07.odin
 
 #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
 enum Operator {
