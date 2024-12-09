@@ -3,12 +3,6 @@ use anyhow::Result;
 
 // Heavy inspo from this: https://github.com/p1xelHer0/aoc-2024/blob/main/odin/07.odin
 
-#[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
-enum Operator {
-    Add,
-    Multiply,
-}
-
 #[derive(Default, Debug)]
 struct Equation {
     target: u64,
