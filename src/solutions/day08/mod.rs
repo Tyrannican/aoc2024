@@ -54,6 +54,28 @@ impl Solution {
     fn find_antinodes(&self, pt1: &Point, pt2: &Point) -> [Point; 2] {
         pt1.antinodes(pt2)
     }
+
+    fn find_all_antinodes(&self, pt1: &Point, pt2: &Point) -> Vec<Point> {
+        let mut all_antinodes = vec![];
+        let init_antinode = pt1.antinodes(pt2);
+        all_antinodes.extend(init_antinode);
+
+        let delta = pt1.sub(pt2);
+        let mut pt1 = pt1.sub(&delta);
+        let mut pt2 = pt2.add(&delta);
+
+        while self.in_bounds(&pt1) {
+            all_antinodes.push(pt1);
+            pt1 = pt1.sub(&delta);
+        }
+
+        while self.in_bounds(&pt2) {
+            all_antinodes.push(pt2);
+            pt2 = pt2.add(&delta);
+        }
+
+        all_antinodes
+    }
 }
 
 impl Solve for Solution {
@@ -105,6 +127,20 @@ impl Solve for Solution {
     }
 
     fn part2(&mut self) -> Result<()> {
+        let mut antinodes = HashSet::new();
+        for (key, antennas) in &self.antennas {
+            for (idx, pt1) in antennas.iter().enumerate() {
+                for pt2 in antennas[idx + 1..].iter() {
+                    let anti = self.find_all_antinodes(pt1, pt2);
+                    antinodes.extend(anti);
+                }
+            }
+        }
+
+        println!(
+            "Part 2: {}",
+            antinodes.iter().filter(|an| self.in_bounds(an)).count()
+        );
         Ok(())
     }
 }
